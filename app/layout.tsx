@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 import Footer from "./components/general/Footer";
 import Navbar from "./components/general/navbar/Navbar";
 import SearchModal from "./components/modals/SearchModal";
@@ -32,6 +33,7 @@ export default function RootLayout({
         <Footer />
         <SignInModal />
         <SearchModal />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
