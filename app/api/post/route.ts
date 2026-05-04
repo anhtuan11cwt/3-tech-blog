@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import slugify from "slugify";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { uploadImage } from "../../services/cloudinary";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,12 +14,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Chưa xác thực" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { title, excerpt, content, coverImage, coverImagePublicId } = body;
+    const formData = await req.formData();
 
-    if (!title || !excerpt || !content || !coverImage) {
+    const title = formData.get("title") as string;
+    const excerpt = formData.get("excerpt") as string;
+    const content = formData.get("content") as string;
+    const file = formData.get("coverImage") as File;
+
+    if (!title || !content || !file) {
       return NextResponse.json(
         { error: "Tất cả các trường đều bắt buộc" },
+        { status: 400 },
+      );
+    }
+
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "Tệp phải là hình ảnh" },
+        { status: 400 },
+      );
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Kích thước ảnh không được vượt quá 5MB" },
         { status: 400 },
       );
     }
@@ -29,6 +48,8 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
+    const { secure_url, public_id } = await uploadImage(file);
 
     const baseSlug = slugify(title, { lower: true, strict: true });
     let slug = baseSlug;
@@ -43,9 +64,9 @@ export async function POST(req: NextRequest) {
       data: {
         authorId: session.user.id,
         content,
-        coverImagePublicId: coverImagePublicId || null,
-        coverImageUrl: coverImage,
-        excerpt,
+        coverImagePublicId: public_id,
+        coverImageUrl: secure_url,
+        excerpt: excerpt || "",
         slug,
         title,
       },

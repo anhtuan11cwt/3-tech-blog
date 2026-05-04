@@ -4,6 +4,7 @@
     "@prisma/client": "^7.8.0",
     "@tailwindcss/typography": "^0.5.19",
     "better-auth": "^1.6.9",
+    "cloudinary": "^2.10.0",
     "jodit-react": "^5.3.21",
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
