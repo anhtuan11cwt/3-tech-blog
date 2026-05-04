@@ -131,6 +131,63 @@ Khi bài viết bị xóa, `coverImagePublicId` được dùng để xóa ảnh 
 
 ---
 
+## 6. Lấy danh sách bài viết mới nhất
+
+- **Method**: GET
+- **URL**: `http://localhost:3000/api/post/recent`
+- **Authorization**: Không (public API)
+- **Response**:
+
+  - 200 (thành công):
+
+```json
+[
+  {
+    "id": "post_abc123",
+    "title": "Bài viết mới nhất 1",
+    "slug": "bai-viet-moi-nhat-1",
+    "excerpt": "Tóm tắt nội dung bài viết 1",
+    "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/abc123.jpg",
+    "createdAt": "2026-05-04T12:00:00.000Z",
+    "author": {
+      "id": "user_xyz789",
+      "name": "Nguyễn Văn A",
+      "image": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/avatar.jpg"
+    }
+  },
+  {
+    "id": "post_def456",
+    "title": "Bài viết mới nhất 2",
+    "slug": "bai-viet-moi-nhat-2",
+    "excerpt": "Tóm tắt nội dung bài viết 2",
+    "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/def456.jpg",
+    "createdAt": "2026-05-03T10:00:00.000Z",
+    "author": {
+      "id": "user_xyz789",
+      "name": "Nguyễn Văn A",
+      "image": null
+    }
+  }
+]
+```
+
+  - 500 (lỗi máy chủ):
+
+```json
+{
+  "error": "Lỗi khi lấy bài viết"
+}
+```
+
+### Giải thích
+
+- **Sắp xếp**: Bài viết mới nhất lên đầu (`createdAt` giảm dần)
+- **Giới hạn**: Tối đa 6 bài viết
+- **Select fields**: Chỉ lấy các trường cần thiết để tối ưu hiệu suất
+- **Include author**: Lấy thông tin tác giả (id, name, image)
+
+---
+
 ## Ghi chú chung
 
 - **Authentication**: Sử dụng BetterAuth session cookie hoặc header `Authorization`.

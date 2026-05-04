@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import RecentPost from "./components/home/RecentPost";
+import PostCardSkeleton from "./components/skeleton/PostCardSkeleton";
 import ContainerLayout from "./layouts/ContainerLayout";
 
 export default function HomePage() {
@@ -51,7 +53,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      <RecentPost />
+      <Suspense fallback={<PostCardSkeleton />}>
+        <RecentPost />
+      </Suspense>
     </ContainerLayout>
   );
 }
