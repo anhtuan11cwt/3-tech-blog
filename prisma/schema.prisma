@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  id                   String   @id @default(cuid())
+  title                String
+  slug                 String   @unique
+  content              String
+  excerpt              String
+  coverImageUrl        String?
+  coverImagePublicId   String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  authorId             String
+}
