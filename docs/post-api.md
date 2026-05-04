@@ -188,6 +188,90 @@ Khi bài viết bị xóa, `coverImagePublicId` được dùng để xóa ảnh 
 
 ---
 
+## 7. Lấy danh sách bài viết (Cursor Pagination)
+
+- **Method**: GET
+- **URL**: `http://localhost:3000/api/post`
+- **Authorization**: Không (public API)
+- **Query Parameters**:
+
+| Param | Type | Mô tả | Mặc định |
+|-------|------|--------|----------|
+| `cursor` | string | ID của bài viết cuối cùng để lấy tiếp | `null` (lấy từ đầu) |
+| `limit` | number | Số lượng bài viết mỗi trang | `6` |
+
+- **Response**:
+
+  - 200 (thành công):
+
+```json
+{
+  "posts": [
+    {
+      "id": "post_abc123",
+      "title": "Bài viết 1",
+      "slug": "bai-viet-1",
+      "excerpt": "Tóm tắt nội dung bài viết 1",
+      "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/abc123.jpg",
+      "createdAt": "2026-05-04T12:00:00.000Z",
+      "author": {
+        "name": "Nguyễn Văn A",
+        "image": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/avatar.jpg"
+      }
+    },
+    {
+      "id": "post_def456",
+      "title": "Bài viết 2",
+      "slug": "bai-viet-2",
+      "excerpt": "Tóm tắt nội dung bài viết 2",
+      "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/def456.jpg",
+      "createdAt": "2026-05-03T10:00:00.000Z",
+      "author": {
+        "name": "Nguyễn Văn A",
+        "image": null
+      }
+    }
+  ],
+  "nextCursor": "post_def456",
+  "hasMore": true
+}
+```
+
+  - 500 (lỗi máy chủ):
+
+```json
+{
+  "error": "Lỗi khi lấy danh sách bài viết"
+}
+```
+
+### Cách hoạt động của Cursor Pagination
+
+1. **Lần 1** - Gọi API không có cursor:
+   ```
+   GET /api/post?limit=6
+   ```
+   → Trả về 6 bài viết + `nextCursor` = ID của bài viết cuối + `hasMore: true`
+
+2. **Lần 2** - Gọi API với cursor từ lần 1:
+   ```
+   GET /api/post?cursor=post_def456&limit=6
+   ```
+   → Lấy 6 bài viết tiếp theo bắt đầu sau bài có ID `post_def456`
+
+3. **Khi hết dữ liệu**:
+   → `hasMore: false`, `nextCursor: null`
+
+### Giải thích
+
+- **Sắp xếp**: Bài viết mới nhất lên đầu (`createdAt` giảm dần)
+- **Cursor**: Sử dụng ID của bài viết làm điểm mốc (không dùng offset)
+- **Take + 1**: Lấy dư 1 bài để kiểm tra còn dữ liệu hay không
+- **Skip**: Bỏ qua chính cursor đó để không bị trùng lặp
+- **Ưu điểm**: Hiệu suất cao hơn offset pagination khi dữ liệu lớn
+
+---
+
 ## Ghi chú chung
 
 - **Authentication**: Sử dụng BetterAuth session cookie hoặc header `Authorization`.

@@ -3,6 +3,7 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@tailwindcss/typography": "^0.5.19",
+    "@tanstack/react-query": "^5.100.9",
     "axios": "^1.16.0",
     "better-auth": "^1.6.9",
     "cloudinary": "^2.10.0",

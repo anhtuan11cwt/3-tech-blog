@@ -4,6 +4,64 @@ import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { uploadImage } from "../../services/cloudinary";
 
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+
+    const cursor = searchParams.get("cursor");
+    const limit = Number(searchParams.get("limit")) || 6;
+
+    const posts = await prisma.post.findMany({
+      take: limit + 1,
+      ...(cursor && {
+        cursor: {
+          id: cursor,
+        },
+        skip: 1,
+      }),
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        author: {
+          select: {
+            image: true,
+            name: true,
+          },
+        },
+        coverImageUrl: true,
+        createdAt: true,
+        excerpt: true,
+        id: true,
+        slug: true,
+        title: true,
+      },
+    });
+
+    let hasMore = false;
+    let nextCursor: string | null = null;
+
+    if (posts.length > limit) {
+      hasMore = true;
+      const nextItem = posts[limit];
+      nextCursor = nextItem.id;
+      posts.pop();
+    }
+
+    return NextResponse.json({
+      hasMore,
+      nextCursor,
+      posts,
+    });
+  } catch (error) {
+    console.error("[LAY_DANH_SACH_BAI_VIET]", error);
+    return NextResponse.json(
+      { error: "Lỗi khi lấy danh sách bài viết" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({

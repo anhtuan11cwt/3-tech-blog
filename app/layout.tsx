@@ -6,6 +6,7 @@ import Footer from "./components/general/Footer";
 import Navbar from "./components/general/navbar/Navbar";
 import SearchModal from "./components/modals/SearchModal";
 import SignInModal from "./components/modals/SignInModal";
+import QueryProvider from "./providers/QueryProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,12 +29,14 @@ export default function RootLayout({
       <body
         className={`${poppins.className} antialiased bg-background text-text flex flex-col min-h-screen`}
       >
-        <Navbar />
-        <main className="flex-grow">{children}</main>
-        <Footer />
-        <SignInModal />
-        <SearchModal />
-        <Toaster position="bottom-right" />
+        <QueryProvider>
+          <Navbar />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+          <SignInModal />
+          <SearchModal />
+          <Toaster position="bottom-right" />
+        </QueryProvider>
       </body>
     </html>
   );
