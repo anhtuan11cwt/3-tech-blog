@@ -43,13 +43,13 @@ export default function Navbar() {
               <span className="hidden md:inline">Tìm kiếm</span>
             </button>
 
-            <button
+            <Link
               className="flex items-center gap-1 hover:text-primary transition-colors"
-              type="button"
+              href="/write"
             >
               <FiEdit size={20} />
               <span>Viết bài</span>
-            </button>
+            </Link>
 
             <button
               className="bg-primary px-4 py-2 rounded-md text-sm text-white hover:bg-hover transition-colors"

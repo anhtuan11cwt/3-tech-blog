@@ -47,10 +47,10 @@ export default function MobileNav({
             Tìm kiếm
           </button>
 
-          <button className="flex items-center gap-2 text-base" type="button">
+          <Link className="flex items-center gap-2 text-base" href="/write">
             <FiEdit size={24} />
             Viết bài
-          </button>
+          </Link>
 
           <button
             className="bg-primary px-6 py-3 rounded-md text-base text-white"
