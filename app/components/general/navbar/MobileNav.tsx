@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FiEdit, FiSearch } from "react-icons/fi";
+import { useModalStore } from "../../../store/useModalStore";
 
 const navLinks = [
   { href: "/", label: "Trang chủ" },
@@ -14,6 +15,8 @@ export default function MobileNav({
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
 }) {
+  const { openSearch, openSignIn } = useModalStore();
+
   return (
     <>
       <button
@@ -42,7 +45,11 @@ export default function MobileNav({
         ))}
 
         <div className="flex flex-col items-center gap-4 mt-4">
-          <button className="flex items-center gap-2 text-base" type="button">
+          <button
+            className="flex items-center gap-2 text-base"
+            onClick={openSearch}
+            type="button"
+          >
             <FiSearch size={24} />
             Tìm kiếm
           </button>
@@ -54,6 +61,7 @@ export default function MobileNav({
 
           <button
             className="bg-primary px-6 py-3 rounded-md text-base text-white"
+            onClick={openSignIn}
             type="button"
           >
             Đăng nhập

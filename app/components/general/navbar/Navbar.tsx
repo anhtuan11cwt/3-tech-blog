@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FiEdit, FiMenu, FiSearch, FiX } from "react-icons/fi";
+import { useModalStore } from "../../../store/useModalStore";
 import Logo from "./Logo";
 import MobileNav from "./MobileNav";
 
@@ -14,6 +15,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { openSignIn, openSearch } = useModalStore();
 
   return (
     <>
@@ -37,6 +39,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-4">
             <button
               className="flex items-center gap-1 hover:text-primary transition-colors"
+              onClick={openSearch}
               type="button"
             >
               <FiSearch size={20} />
@@ -53,6 +56,7 @@ export default function Navbar() {
 
             <button
               className="bg-primary px-4 py-2 rounded-md text-sm text-white hover:bg-hover transition-colors"
+              onClick={openSignIn}
               type="button"
             >
               Đăng nhập

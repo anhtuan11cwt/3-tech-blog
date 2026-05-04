@@ -3,6 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/general/Footer";
 import Navbar from "./components/general/navbar/Navbar";
+import SearchModal from "./components/modals/SearchModal";
+import SignInModal from "./components/modals/SignInModal";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,6 +30,8 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <SignInModal />
+        <SearchModal />
       </body>
     </html>
   );
