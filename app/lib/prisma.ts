@@ -14,10 +14,25 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
+  try {
+    const pool = new Pool({
+      connectionString,
+      ssl: connectionString.includes("sslmode=verify-full")
+        ? { rejectUnauthorized: false }
+        : false,
+    });
+    const adapter = new PrismaPg(pool);
 
-  return new PrismaClient({ adapter });
+    return new PrismaClient({
+      adapter,
+      log:
+        process.env.NODE_ENV === "development"
+          ? ["query", "error", "warn"]
+          : ["error"],
+    });
+  } catch (error) {
+    throw error;
+  }
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();

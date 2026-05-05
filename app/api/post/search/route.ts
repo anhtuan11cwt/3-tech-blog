@@ -50,8 +50,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(posts);
-  } catch (error) {
-    console.error("[TIM_KIEM_BAI_VIET]", error);
+  } catch {
     return NextResponse.json(
       { error: "Lỗi khi tìm kiếm bài viết" },
       { status: 500 },

@@ -1,21 +1,46 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import type { Post } from "../../types/post";
+import PostCardSkeleton from "../skeleton/PostCardSkeleton";
 
-async function getRecentPosts(): Promise<Post[]> {
-  const res = await fetch("/api/post/recent", {
-    cache: "no-store",
-  });
+export default function RecentPost() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!res.ok) {
-    throw new Error("Lỗi khi lấy bài viết");
+  useEffect(() => {
+    const getRecentPosts = async () => {
+      try {
+        const res = await fetch("/api/post/recent");
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data);
+        }
+      } catch {
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getRecentPosts();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="mt-20">
+        <h2 className="font-semibold text-text text-2xl lg:text-3xl">
+          Bài viết mới nhất
+        </h2>
+        <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8">
+          {[1, 2, 3].map((item) => (
+            <PostCardSkeleton key={item} />
+          ))}
+        </div>
+      </div>
+    );
   }
-
-  return res.json();
-}
-
-export default async function RecentPost() {
-  const posts = await getRecentPosts();
 
   if (!posts || posts.length === 0) {
     return (

@@ -4,6 +4,10 @@ import { prisma } from "../lib/prisma";
 
 export async function getPost(slug: string) {
   try {
+    if (!slug) {
+      return null;
+    }
+
     const post = await prisma.post.findUnique({
       select: {
         author: {
@@ -26,8 +30,7 @@ export async function getPost(slug: string) {
     if (!post) return null;
 
     return post;
-  } catch (error) {
-    console.error("GET POST ERROR:", error);
+  } catch {
     return null;
   }
 }

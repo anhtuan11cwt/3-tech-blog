@@ -47,8 +47,7 @@ export async function GET(
     }
 
     return NextResponse.json(post);
-  } catch (error) {
-    console.error("[LAY_BAI_VIET_THEO_ID]", error);
+  } catch {
     return NextResponse.json(
       { error: "Lỗi khi lấy bài viết" },
       { status: 500 },
@@ -145,9 +144,7 @@ export async function PATCH(
       if (existingPost.coverImagePublicId) {
         try {
           await deleteImage(existingPost.coverImagePublicId);
-        } catch (error) {
-          console.error("Lỗi xóa ảnh cũ:", error);
-        }
+        } catch {}
       }
 
       newCoverImageUrl = secure_url;
@@ -170,8 +167,7 @@ export async function PATCH(
       message: "Cập nhật bài viết thành công",
       post: updatedPost,
     });
-  } catch (error) {
-    console.error("[CAP_NHAT_BAI_VIET]", error);
+  } catch {
     return NextResponse.json(
       { error: "Lỗi khi cập nhật bài viết" },
       { status: 500 },
@@ -215,9 +211,7 @@ export async function DELETE(
     if (post.coverImagePublicId) {
       try {
         await deleteImage(post.coverImagePublicId);
-      } catch (error) {
-        console.error("Lỗi xóa ảnh:", error);
-      }
+      } catch {}
     }
 
     await prisma.post.delete({
@@ -225,8 +219,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("[XOA_BAI_VIET]", error);
+  } catch {
     return NextResponse.json(
       { error: "Lỗi khi xóa bài viết" },
       { status: 500 },

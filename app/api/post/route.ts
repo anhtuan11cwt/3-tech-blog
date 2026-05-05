@@ -54,8 +54,7 @@ export async function GET(req: NextRequest) {
       nextCursor,
       posts,
     });
-  } catch (error) {
-    console.error("[LAY_DANH_SACH_BAI_VIET]", error);
+  } catch {
     return NextResponse.json(
       { error: "Lỗi khi lấy danh sách bài viết" },
       { status: 500 },
@@ -135,9 +134,7 @@ export async function POST(req: NextRequest) {
       { message: "Tạo bài viết thành công", post: newPost },
       { status: 201 },
     );
-  } catch (error) {
-    console.error("Lỗi POST /api/post:", error);
-
+  } catch {
     return NextResponse.json({ error: "Lỗi máy chủ nội bộ" }, { status: 500 });
   }
 }

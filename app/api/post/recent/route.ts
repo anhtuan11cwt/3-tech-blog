@@ -26,8 +26,7 @@ export async function GET() {
     });
 
     return NextResponse.json(posts);
-  } catch (error) {
-    console.error("[LAY_BAI_VIET_MOI_NHAT]", error);
+  } catch {
     return NextResponse.json(
       { error: "Lỗi khi lấy bài viết" },
       { status: 500 },
