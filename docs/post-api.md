@@ -509,6 +509,76 @@ Khi bài viết bị xóa, `coverImagePublicId` được dùng để xóa ảnh 
 
 ---
 
+## 11. Tìm kiếm bài viết
+
+- **Method**: GET
+- **URL**: `http://localhost:3000/api/post/search?q={query}&limit={limit}`
+- **Authorization**: Không (public API)
+- **Query Parameters**:
+
+| Param | Type | Mô tả | Mặc định |
+|-------|------|-------|----------|
+| `q` | string | Từ khóa tìm kiếm | - |
+| `limit` | number | Số lượng kết quả | `5` |
+
+- **Response**:
+
+  - 200 (thành công):
+
+```json
+[
+  {
+    "id": "post_abc123",
+    "title": "Hướng dẫn Next.js",
+    "slug": "huong-dan-nextjs",
+    "excerpt": "Tìm hiểu cách xây dựng ứng dụng Next.js từ cơ bản",
+    "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/abc123.jpg",
+    "createdAt": "2026-05-04T12:00:00.000Z"
+  },
+  {
+    "id": "post_def456",
+    "title": "React Tips & Tricks",
+    "slug": "react-tips-tricks",
+    "excerpt": "Một số mẹo hữu ích khi làm việc với React",
+    "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/def456.jpg",
+    "createdAt": "2026-05-03T10:00:00.000Z"
+  }
+]
+```
+
+  - 200 (không có kết quả):
+
+```json
+[]
+```
+
+  - 500 (lỗi máy chủ):
+
+```json
+{
+  "error": "Lỗi khi tìm kiếm bài viết"
+}
+```
+
+### Luồng xử lý
+
+1. **Validate query**: Nếu query rỗng, trả về mảng rỗng
+2. **Prisma OR query**: Tìm kiếm trong 3 trường:
+   - `title` (tiêu đề)
+   - `excerpt` (tóm tắt)
+   - `content` (nội dung)
+3. **Mode**: `insensitive` - không phân biệt hoa thường
+4. **Sắp xếp**: Bài viết mới nhất lên đầu (`createdAt` giảm dần)
+5. **Giới hạn**: Mặc định 5 kết quả
+
+### Frontend Integration
+
+- **Debounce**: Sử dụng `useDebounce` với delay 400ms để tránh spam API
+- **React Query**: Sử dụng `useQuery` với key `["search", debouncedQuery]`
+- **Enabled**: Chỉ gọi API khi `debouncedQuery.length > 1`
+
+---
+
 ## Ghi chú chung
 
 - **Authentication**: Sử dụng BetterAuth session cookie hoặc header `Authorization`.
