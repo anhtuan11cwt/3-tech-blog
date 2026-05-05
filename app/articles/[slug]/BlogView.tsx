@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import DeleteButton from "../../components/DeleteButton";
 import ContainerLayout from "../../layouts/ContainerLayout";
 import { authClient } from "../../lib/auth-client";
 
@@ -104,12 +105,7 @@ export default function BlogView({ postPromise }: Props) {
               Chỉnh sửa
             </button>
 
-            <button
-              className="bg-red-500/10 hover:bg-red-500/20 px-4 py-2 border border-red-500/30 rounded-lg text-red-400 transition"
-              type="button"
-            >
-              Xóa
-            </button>
+            <DeleteButton postId={post.id} />
           </div>
         )}
 

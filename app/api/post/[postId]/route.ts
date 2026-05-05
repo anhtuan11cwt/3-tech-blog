@@ -178,3 +178,58 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ postId: string }> },
+) {
+  try {
+    const { postId } = await params;
+
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Chưa xác thực" }, { status: 401 });
+    }
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: "Không tìm thấy bài viết" },
+        { status: 404 },
+      );
+    }
+
+    if (post.authorId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Không có quyền xóa" },
+        { status: 403 },
+      );
+    }
+
+    if (post.coverImagePublicId) {
+      try {
+        await deleteImage(post.coverImagePublicId);
+      } catch (error) {
+        console.error("Lỗi xóa ảnh:", error);
+      }
+    }
+
+    await prisma.post.delete({
+      where: { id: postId },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[XOA_BAI_VIET]", error);
+    return NextResponse.json(
+      { error: "Lỗi khi xóa bài viết" },
+      { status: 500 },
+    );
+  }
+}

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const fetchPosts = async ({
   pageParam = null,
 }: {
@@ -16,4 +18,9 @@ export const fetchPosts = async ({
   }
 
   return res.json();
+};
+
+export const deletePost = async (postId: string) => {
+  const res = await axios.delete(`/api/post/${postId}`);
+  return res.data;
 };

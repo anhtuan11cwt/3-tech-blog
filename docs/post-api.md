@@ -446,6 +446,69 @@ Khi bài viết bị xóa, `coverImagePublicId` được dùng để xóa ảnh 
 
 ---
 
+## 10. Xóa bài viết
+
+- **Method**: DELETE
+- **URL**: `http://localhost:3000/api/post/{postId}`
+- **Authorization**: Có (yêu cầu đăng nhập)
+- **Headers**:
+  - `Cookie: better-auth.session_token={SESSION_TOKEN}`
+
+- **Response**:
+
+  - 200 (thành công):
+
+```json
+{
+  "success": true
+}
+```
+
+  - 401 (chưa đăng nhập):
+
+```json
+{
+  "error": "Chưa xác thực"
+}
+```
+
+  - 404 (không tìm thấy bài viết):
+
+```json
+{
+  "error": "Không tìm thấy bài viết"
+}
+```
+
+  - 403 (không có quyền xóa):
+
+```json
+{
+  "error": "Không có quyền xóa"
+}
+```
+
+  - 500 (lỗi máy chủ):
+
+```json
+{
+  "error": "Lỗi khi xóa bài viết"
+}
+```
+
+### Luồng xử lý
+
+1. **Kiểm tra quyền sở hữu**: Chỉ author mới được xóa bài viết
+2. **Xóa ảnh trên Cloudinary**: Xóa ảnh bìa trước khi xóa bài viết (tránh orphan image)
+3. **Xóa trong Database**: Xóa bản ghi bài viết khỏi PostgreSQL
+
+### Lưu ý quan trọng
+
+- **Thứ tự xóa**: Luôn xóa ảnh trên Cloudinary TRƯỚC KHI xóa database để tránh mất public_id
+- **Xóa ảnh**: Nếu bài viết có ảnh bìa, sẽ gọi deleteImage(coverImagePublicId) để giải phóng dung lượng Cloudinary
+
+---
+
 ## Ghi chú chung
 
 - **Authentication**: Sử dụng BetterAuth session cookie hoặc header `Authorization`.
