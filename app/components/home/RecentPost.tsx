@@ -3,12 +3,9 @@ import Link from "next/link";
 import type { Post } from "../../types/post";
 
 async function getRecentPosts(): Promise<Post[]> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/recent`,
-    {
-      cache: "no-store",
-    },
-  );
+  const res = await fetch("/api/post/recent", {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     throw new Error("Lỗi khi lấy bài viết");
@@ -23,7 +20,7 @@ export default async function RecentPost() {
   if (!posts || posts.length === 0) {
     return (
       <div className="mt-20">
-        <h2 className="text-2xl lg:text-3xl font-semibold text-text">
+        <h2 className="font-semibold text-text text-2xl lg:text-3xl">
           Bài viết mới nhất
         </h2>
         <p className="mt-8 text-gray-400">Không có bài viết nào.</p>
@@ -33,14 +30,14 @@ export default async function RecentPost() {
 
   return (
     <div className="mt-20">
-      <h2 className="text-2xl lg:text-3xl font-semibold text-text">
+      <h2 className="font-semibold text-text text-2xl lg:text-3xl">
         Bài viết mới nhất
       </h2>
 
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8">
         {posts.map((post) => (
           <article
-            className="group rounded-xl overflow-hidden border border-white/10 bg-white/5 hover:-translate-y-1 transition"
+            className="group bg-white/5 border border-white/10 rounded-xl overflow-hidden transition hover:-translate-y-1"
             key={post.id}
           >
             <div className="relative overflow-hidden">
@@ -55,7 +52,7 @@ export default async function RecentPost() {
             </div>
 
             <div className="p-4">
-              <p className="text-sm text-gray-400">
+              <p className="text-gray-400 text-sm">
                 {new Date(post.createdAt).toLocaleDateString("vi-VN", {
                   day: "numeric",
                   month: "long",
@@ -63,14 +60,14 @@ export default async function RecentPost() {
                 })}
               </p>
 
-              <h3 className="mt-2 text-lg text-text font-semibold">
+              <h3 className="mt-2 font-semibold text-text text-lg">
                 {post.title}
               </h3>
 
               <p className="mt-2 text-gray-400 line-clamp-3">{post.excerpt}</p>
 
               <Link
-                className="mt-4 inline-block text-primary hover:underline"
+                className="inline-block mt-4 text-primary hover:underline"
                 href={`/articles/${post.slug}`}
               >
                 Đọc tiếp →
