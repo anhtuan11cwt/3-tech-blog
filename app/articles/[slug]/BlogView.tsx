@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { use } from "react";
 import ContainerLayout from "../../layouts/ContainerLayout";
 import { authClient } from "../../lib/auth-client";
@@ -26,6 +27,7 @@ type Props = {
 
 export default function BlogView({ postPromise }: Props) {
   const post = use(postPromise);
+  const router = useRouter();
   const { data: session } = authClient.useSession();
 
   if (!post) {
@@ -96,6 +98,7 @@ export default function BlogView({ postPromise }: Props) {
           <div className="flex gap-4 mb-8">
             <button
               className="bg-yellow-500/10 hover:bg-yellow-500/20 px-4 py-2 border border-yellow-500/30 rounded-lg text-yellow-400 transition"
+              onClick={() => router.push(`/write/edit/${post.id}`)}
               type="button"
             >
               Chỉnh sửa

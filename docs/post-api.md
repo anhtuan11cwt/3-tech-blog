@@ -272,6 +272,180 @@ Khi bài viết bị xóa, `coverImagePublicId` được dùng để xóa ảnh 
 
 ---
 
+## 8. Lấy bài viết theo ID (Chỉnh sửa)
+
+- **Method**: GET
+- **URL**: `http://localhost:3000/api/post/{postId}`
+- **Authorization**: Có (yêu cầu đăng nhập)
+- **Headers**:
+  - `Cookie: better-auth.session_token={SESSION_TOKEN}`
+
+- **Response**:
+
+  - 200 (thành công):
+
+```json
+{
+  "title": "Bài viết cần chỉnh sửa",
+  "excerpt": "Tóm tắt nội dung bài viết",
+  "content": "Nội dung đầy đủ của bài viết...",
+  "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/abc123.jpg",
+  "coverImagePublicId": "tech-blog/abc123",
+  "slug": "bai-viet-can-chinh-sua"
+}
+```
+
+  - 401 (chưa đăng nhập):
+
+```json
+{
+  "error": "Chưa xác thực"
+}
+```
+
+  - 404 (không tìm thấy bài viết):
+
+```json
+{
+  "error": "Không tìm thấy bài viết"
+}
+```
+
+  - 403 (không có quyền chỉnh sửa):
+
+```json
+{
+  "error": "Không có quyền chỉnh sửa"
+}
+```
+
+  - 500 (lỗi máy chủ):
+
+```json
+{
+  "error": "Lỗi khi lấy bài viết"
+}
+```
+
+### Giải thích
+
+- Chỉ author của bài viết mới có quyền lấy dữ liệu để chỉnh sửa
+- Trả về đầy đủ thông tin: title, excerpt, content, coverImageUrl, coverImagePublicId, slug
+- Dùng để populate form chỉnh sửa
+
+---
+
+## 9. Cập nhật bài viết
+
+- **Method**: PATCH
+- **URL**: `http://localhost:3000/api/post/{postId}`
+- **Authorization**: Có (yêu cầu đăng nhập)
+- **Headers**:
+  - `Cookie: better-auth.session_token={SESSION_TOKEN}`
+- **Body** (form-data):
+
+| Key | Type | Mô tả |
+|-----|------|-------|
+| `title` | text | Tiêu đề bài viết (bắt buộc) |
+| `excerpt` | text | Tóm tắt nội dung bài viết |
+| `content` | text | Nội dung đầy đủ (bắt buộc) |
+| `coverImage` | file | Ảnh bìa mới (tùy chọn, jpg, png, webp, tối đa 5MB) |
+
+- **Response**:
+
+  - 200 (thành công):
+
+```json
+{
+  "message": "Cập nhật bài viết thành công",
+  "post": {
+    "id": "post_abc123",
+    "title": "Bài viết đã cập nhật",
+    "slug": "bai-viet-da-cap-nhat",
+    "excerpt": "Tóm tắt nội dung bài viết",
+    "content": "Nội dung đầy đủ của bài viết...",
+    "coverImageUrl": "https://res.cloudinary.com/deef71c3q/image/upload/v1/tech-blog/new123.jpg",
+    "coverImagePublicId": "tech-blog/new123",
+    "authorId": "user_xyz789",
+    "createdAt": "2026-05-04T12:00:00.000Z",
+    "updatedAt": "2026-05-05T14:30:00.000Z"
+  }
+}
+```
+
+  - 401 (chưa đăng nhập):
+
+```json
+{
+  "error": "Chưa xác thực"
+}
+```
+
+  - 404 (không tìm thấy bài viết):
+
+```json
+{
+  "error": "Không tìm thấy bài viết"
+}
+```
+
+  - 403 (không có quyền chỉnh sửa):
+
+```json
+{
+  "error": "Không có quyền chỉnh sửa"
+}
+```
+
+  - 400 (thiếu trường bắt buộc):
+
+```json
+{
+  "error": "Tiêu đề và nội dung là bắt buộc"
+}
+```
+
+  - 400 (file không phải hình ảnh):
+
+```json
+{
+  "error": "Tệp phải là hình ảnh"
+}
+```
+
+  - 400 (file quá lớn):
+
+```json
+{
+  "error": "Kích thước ảnh không được vượt quá 5MB"
+}
+```
+
+  - 500 (lỗi máy chủ):
+
+```json
+{
+  "error": "Lỗi khi cập nhật bài viết"
+}
+```
+
+### Luồng xử lý
+
+1. **Kiểm tra quyền sở hữu**: Chỉ author mới được cập nhật
+2. **Xử lý Slug**: Nếu title thay đổi → tạo slug mới, kiểm tra trùng lặp
+3. **Xử lý Ảnh**:
+   - Nếu có ảnh mới → upload lên Cloudinary → xóa ảnh cũ
+   - Nếu không có ảnh mới → giữ nguyên ảnh cũ
+4. **Cập nhật Database**: Lưu tất cả thay đổi vào Prisma
+
+### Xử lý Slug khi chỉnh sửa
+
+- Nếu title không đổi → giữ nguyên slug cũ
+- Nếu title thay đổi → tạo slug mới từ title mới
+- Nếu slug mới trùng với bài khác → thêm suffix `-1`, `-2`, ...
+
+---
+
 ## Ghi chú chung
 
 - **Authentication**: Sử dụng BetterAuth session cookie hoặc header `Authorization`.

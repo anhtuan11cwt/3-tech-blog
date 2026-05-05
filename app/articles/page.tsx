@@ -2,14 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import PostCardSkeleton from "../components/skeleton/PostCardSkeleton";
 import { useInfinitePosts } from "../hooks/useInfinitePosts";
 import ContainerLayout from "../layouts/ContainerLayout";
+import { authClient } from "../lib/auth-client";
 
 const loadingSkeletons = [1, 2, 3, 4, 5, 6];
 const fetchingSkeletons = [1, 2, 3];
 
 export default function ArticlesPage() {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfinitePosts();
 
@@ -61,12 +65,24 @@ export default function ArticlesPage() {
                 {post.excerpt}
               </p>
 
-              <Link
-                className="text-sm text-primary hover:underline"
-                href={`/articles/${post.slug}`}
-              >
-                Đọc tiếp →
-              </Link>
+              <div className="flex items-center justify-between">
+                <Link
+                  className="text-sm text-primary hover:underline"
+                  href={`/articles/${post.slug}`}
+                >
+                  Đọc tiếp →
+                </Link>
+
+                {session?.user?.id === post.author.id && (
+                  <button
+                    className="text-sm text-yellow-400 hover:text-yellow-300 transition"
+                    onClick={() => router.push(`/write/edit/${post.id}`)}
+                    type="button"
+                  >
+                    Chỉnh sửa
+                  </button>
+                )}
+              </div>
             </div>
           </article>
         ))}
